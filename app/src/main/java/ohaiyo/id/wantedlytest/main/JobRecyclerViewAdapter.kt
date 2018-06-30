@@ -5,45 +5,38 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import kotlinx.android.synthetic.main.layout_job_item.view.*
 import ohaiyo.id.wantedlytest.R
+import ohaiyo.id.wantedlytest.main.MainFragment.JobItemListener
+import ohaiyo.id.wantedlytest.model.Job
 
-
-import ohaiyo.id.wantedlytest.main.MainFragment.OnListFragmentInteractionListener
-import ohaiyo.id.wantedlytest.main.dummy.DummyContent.DummyItem
-
-import kotlinx.android.synthetic.main.fragment_job.view.*
-
-/**
- * [RecyclerView.Adapter] that can display a [DummyItem] and makes a call to the
- * specified [OnListFragmentInteractionListener].
- * TODO: Replace the implementation with code for your data type.
- */
 class JobRecyclerViewAdapter(
-        private val mValues: List<DummyItem>,
-        private val mListener: OnListFragmentInteractionListener?)
+        private val mValues: MutableList<Job>,
+        private val mListener: JobItemListener?)
     : RecyclerView.Adapter<JobRecyclerViewAdapter.ViewHolder>() {
 
     private val mOnClickListener: View.OnClickListener
 
     init {
         mOnClickListener = View.OnClickListener { v ->
-            val item = v.tag as DummyItem
+            val item = v.tag as Job
             // Notify the active callbacks interface (the activity, if the fragment is attached to
             // one) that an item has been selected.
-            mListener?.onListFragmentInteraction(item)
+            mListener?.onJobClick(item)
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
-                .inflate(R.layout.fragment_job, parent, false)
+                .inflate(R.layout.layout_job_item, parent, false)
         return ViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = mValues[position]
-        holder.mIdView.text = item.id
-        holder.mContentView.text = item.content
+        holder.mCompanyTV.text = item.company.name
+        holder.mJobTitleTV.text = item.looking_for
+        holder.mLocationTV.text = item.location
 
         with(holder.mView) {
             tag = item
@@ -53,12 +46,18 @@ class JobRecyclerViewAdapter(
 
     override fun getItemCount(): Int = mValues.size
 
+    fun setJobList(jobList: List<Job>) {
+        mValues.clear()
+        mValues.addAll(jobList)
+    }
+
     inner class ViewHolder(val mView: View) : RecyclerView.ViewHolder(mView) {
-        val mIdView: TextView = mView.item_number
-        val mContentView: TextView = mView.content
+        val mCompanyTV: TextView = mView.tv_company_name
+        val mJobTitleTV: TextView = mView.tv_job_title
+        val mLocationTV: TextView = mView.tv_location
 
         override fun toString(): String {
-            return super.toString() + " '" + mContentView.text + "'"
+            return super.toString() + " '" + mCompanyTV.text + " - " + mJobTitleTV.text +"' "
         }
     }
 }

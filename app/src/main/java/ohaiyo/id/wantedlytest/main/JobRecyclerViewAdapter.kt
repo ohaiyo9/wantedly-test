@@ -51,6 +51,10 @@ class JobRecyclerViewAdapter(
         mValues.addAll(jobList)
     }
 
+    fun addJobList(jobList: List<Job>) {
+        mValues.addAll(jobList)
+    }
+
     inner class ViewHolder(val mView: View) : RecyclerView.ViewHolder(mView) {
         val mCompanyTV: TextView = mView.tv_company_name
         val mJobTitleTV: TextView = mView.tv_job_title

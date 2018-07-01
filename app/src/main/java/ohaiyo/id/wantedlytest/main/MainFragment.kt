@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,6 +24,10 @@ class MainFragment : Fragment(), MainContract.View {
 
     override lateinit var presenter: MainContract.Presenter
 
+    private var mQuery: String = ""
+    private var mPage = 1
+    private var lastResponse: Response? = null
+
     private var itemListener: JobItemListener = object : JobItemListener {
         override fun onJobClick(clickedJob: Job) {
             presenter.openJobDetails(clickedJob)
@@ -39,13 +44,27 @@ class MainFragment : Fragment(), MainContract.View {
             findViewById<Button>(R.id.btn_search).also {
                 it.setOnClickListener {
                     showProgress()
-                    presenter.getJobListing(et_query.text.toString(), 1)
+                    if (!TextUtils.equals(mQuery, et_query.text.toString())) {
+                        mPage = 1
+                    }
+                    mQuery = et_query.text.toString()
+                    presenter.getJobListing(mQuery, mPage)
                 }
             }
 
             findViewById<RecyclerView>(R.id.list).also {
                 it.layoutManager = LinearLayoutManager(context)
                 it.adapter = listAdapter
+                it.addOnScrollListener(object: EndlessRecyclerOnScrollListener() {
+                    override fun onLoadMore() {
+                        val tp = lastResponse?._metadata?.total_pages ?: 0
+                        if (mPage < tp) {
+                            showProgress()
+                            presenter.getJobListing(mQuery, mPage++)
+                        }
+                    }
+
+                })
             }
         }
 
@@ -76,6 +95,14 @@ class MainFragment : Fragment(), MainContract.View {
         hideProgress()
         listAdapter.setJobList(jobList.data)
         listAdapter.notifyDataSetChanged()
+        lastResponse = jobList
+    }
+
+    override fun showMoreJobList(jobList: Response) {
+        hideProgress()
+        listAdapter.addJobList(jobList.data)
+        listAdapter.notifyDataSetChanged()
+        lastResponse = jobList
     }
 
     override fun showJobDetails(requestedJob: Job) {

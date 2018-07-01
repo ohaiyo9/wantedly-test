@@ -10,6 +10,8 @@ interface MainContract {
     interface View : BaseView<Presenter> {
         fun showJobList(jobList: Response)
 
+        fun showMoreJobList(jobList: Response)
+
         fun showJobDetails(requestedJob: Job)
     }
 

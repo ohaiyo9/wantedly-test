@@ -3,4 +3,7 @@
     <string name="search">Search</string>
     <string name="internet_connection_unavailable">Internet connection unavailable</string>
     <string name="server_error">Server error</string>
+    <string name="apply">Apply</string>
+    <string name="apply_confirmation">Are you sure want to apply to this job?</string>
+    <string name="cancel">Cancel</string>
 </resources>

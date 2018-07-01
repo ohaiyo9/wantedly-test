@@ -12,6 +12,7 @@ import android.widget.Button
 import android.widget.Toast
 import kotlinx.android.synthetic.main.fragment_main.*
 import ohaiyo.id.wantedlytest.R
+import ohaiyo.id.wantedlytest.jobdetail.JobDetailActivity
 import ohaiyo.id.wantedlytest.model.Job
 import ohaiyo.id.wantedlytest.model.Response
 
@@ -106,7 +107,7 @@ class MainFragment : Fragment(), MainContract.View {
     }
 
     override fun showJobDetails(requestedJob: Job) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        startActivity(JobDetailActivity.newIntent(context, requestedJob))
     }
 
     private fun showProgress() {

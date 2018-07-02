@@ -3,6 +3,7 @@ package ohaiyo.id.wantedlytest.main
 import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.TextUtils
@@ -72,6 +73,9 @@ class MainFragment : Fragment(), MainContract.View {
             findViewById<RecyclerView>(R.id.list).also {
                 it.layoutManager = LinearLayoutManager(context)
                 it.adapter = listAdapter
+
+                val dividerItemDecoration = DividerItemDecoration(it.context, LinearLayoutManager.VERTICAL)
+                it.addItemDecoration(dividerItemDecoration)
             }
 
             findViewById<ImageView>(R.id.btn_first).also {
@@ -142,6 +146,7 @@ class MainFragment : Fragment(), MainContract.View {
     override fun showJobList(jobList:Response) {
         listAdapter.setJobList(jobList.data)
         listAdapter.notifyDataSetChanged()
+        list.scrollToPosition(0)
 
         if (mPage == 1) {
             btn_first.visibility = View.GONE

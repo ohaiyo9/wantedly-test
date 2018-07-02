@@ -16,6 +16,8 @@ class JobDetailActivity : AppCompatActivity(), JobDetailContract.View {
 
     override lateinit var presenter: JobDetailContract.Presenter
 
+    private lateinit var mJob: Job
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_job_detail)
@@ -24,13 +26,22 @@ class JobDetailActivity : AppCompatActivity(), JobDetailContract.View {
 
         presenter = JobDetailPresenter(this)
 
-        tv_job_title.text = intent.getStringExtra(TITLE)
-        tv_looking_for.text = intent.getStringExtra(LOOKING_FOR)
-        tv_company_name.text = intent.getStringExtra(COMPANY_NAME)
-        tv_location.text = intent.getStringExtra(LOCATION)
-        tv_description.text = intent.getStringExtra(DESCRIPTION)
+        mJob = intent.getParcelableExtra(JOB)
 
-        val imgUrl = intent.getStringExtra(IMG_URL)
+        title = mJob.looking_for
+
+        setupViews()
+    }
+
+    private fun setupViews() {
+        tv_job_title.text = mJob.title
+        tv_looking_for.text = mJob.looking_for
+        tv_company_name.text = mJob.company.name
+        tv_url.text = mJob.company.url
+        tv_location.text = getString(R.string.concat_strings, mJob.location, mJob.location_suffix)
+        tv_description.text = mJob.description
+
+        val imgUrl = mJob.image.i_320_131
         Picasso.get().load(imgUrl).into(iv_job)
 
         btn_apply.setOnClickListener {
@@ -41,7 +52,7 @@ class JobDetailActivity : AppCompatActivity(), JobDetailContract.View {
                     dismiss()
                 })
                 setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.apply), {_, _ ->
-                    presenter.apply(intent.getLongExtra(JOB_ID, 0))
+                    presenter.apply(mJob.id)
                     dismiss()
                 })
             }
@@ -82,23 +93,11 @@ class JobDetailActivity : AppCompatActivity(), JobDetailContract.View {
     }
 
     companion object {
-        private const val JOB_ID = "job_id"
-        private const val TITLE = "title"
-        private const val COMPANY_NAME = "company_name"
-        private const val LOCATION = "location"
-        private const val LOOKING_FOR = "looking_for"
-        private const val DESCRIPTION = "description"
-        private const val IMG_URL = "img_url"
+        private const val JOB = "job"
 
         fun newIntent(context: Context?, job: Job): Intent =
                 Intent(context, JobDetailActivity::class.java).apply {
-                    putExtra(JOB_ID, job.id)
-                    putExtra(TITLE, job.title)
-                    putExtra(COMPANY_NAME, job.company.name)
-                    putExtra(LOCATION, job.location)
-                    putExtra(LOOKING_FOR, job.looking_for)
-                    putExtra(DESCRIPTION, job.description)
-                    putExtra(IMG_URL, job.image.i_320_131)
+                    putExtra(JOB, job)
                 }
     }
 }

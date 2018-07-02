@@ -10,9 +10,9 @@
 - OkHttp
 
 ### Screenshots
-![](https://raw.githubusercontent.com/ohaiyo9/wantedly-test/master/screenshot/Screenshot_1.png)
+![Main Screen](/screenshot/Screenshot_1.png)
 >Main Screen
-![](https://raw.githubusercontent.com/ohaiyo9/wantedly-test/master/screenshot/Screenshot_2.png)
+![Search result](/screenshot/Screenshot_2.png)
 >Search result
-![](https://raw.githubusercontent.com/ohaiyo9/wantedly-test/master/screenshot/Screenshot_3.png)
+![Detail screen](/screenshot/Screenshot_3.png)
 >Detail Screen

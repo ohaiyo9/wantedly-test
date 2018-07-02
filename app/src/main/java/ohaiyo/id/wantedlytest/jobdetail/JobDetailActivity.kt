@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
+import android.view.MenuItem
 import android.widget.Toast
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_job_detail.*
@@ -18,6 +19,8 @@ class JobDetailActivity : AppCompatActivity(), JobDetailContract.View {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_job_detail)
+
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         presenter = JobDetailPresenter(this)
 
@@ -61,6 +64,21 @@ class JobDetailActivity : AppCompatActivity(), JobDetailContract.View {
 
     override fun showMessage(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.getItemId()) {
+            android.R.id.home -> {
+                onBackPressed()
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        overridePendingTransition(R.anim.ltr_enter, R.anim.ltr_exit)
     }
 
     companion object {

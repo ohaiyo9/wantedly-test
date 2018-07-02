@@ -174,6 +174,7 @@ class MainFragment : Fragment(), MainContract.View {
 
     override fun showJobDetails(requestedJob: Job) {
         startActivity(JobDetailActivity.newIntent(context, requestedJob))
+        activity?.overridePendingTransition(R.anim.rtl_enter, R.anim.rtl_exit)
     }
 
     private fun showProgress() {

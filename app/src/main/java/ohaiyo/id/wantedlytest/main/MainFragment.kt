@@ -1,5 +1,6 @@
 package ohaiyo.id.wantedlytest.main
 
+import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
@@ -8,10 +9,9 @@ import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
+import android.widget.*
 import kotlinx.android.synthetic.main.fragment_main.*
 import ohaiyo.id.wantedlytest.R
 import ohaiyo.id.wantedlytest.jobdetail.JobDetailActivity
@@ -44,9 +44,23 @@ class MainFragment : Fragment(), MainContract.View {
         val root = inflater.inflate(R.layout.fragment_main, container, false)
 
         with(root) {
+            findViewById<EditText>(R.id.et_query).apply {
+                setOnEditorActionListener { v, actionId, event ->
+                    var handled = false
+                    if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                        btn_search.performClick()
+                        handled = true
+                    }
+                    return@setOnEditorActionListener handled
+                }
+            }
+
             findViewById<Button>(R.id.btn_search).also {
                 it.setOnClickListener {
                     showProgress()
+                    val imm = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                    imm.hideSoftInputFromWindow(windowToken, 0)
+
                     if (!TextUtils.equals(mQuery, et_query.text.toString())) {
                         mPage = 1
                     }

@@ -9,6 +9,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import kotlinx.android.synthetic.main.fragment_main.*
 import ohaiyo.id.wantedlytest.R
@@ -56,17 +58,48 @@ class MainFragment : Fragment(), MainContract.View {
             findViewById<RecyclerView>(R.id.list).also {
                 it.layoutManager = LinearLayoutManager(context)
                 it.adapter = listAdapter
-                it.addOnScrollListener(object: EndlessRecyclerOnScrollListener() {
-                    override fun onLoadMore() {
-                        val tp = lastResponse?._metadata?.total_pages ?: 0
-                        if (mPage < tp) {
-                            showProgress()
-                            presenter.getJobListing(mQuery, mPage++)
-                        }
-                    }
-
-                })
             }
+
+            findViewById<ImageView>(R.id.btn_first).also {
+                it.visibility = View.GONE
+                it.setOnClickListener {
+                    showProgress()
+                    mPage = 1
+                    presenter.getJobListing(mQuery, mPage)
+                }
+            }
+
+            findViewById<ImageView>(R.id.btn_prev).also {
+                it.visibility = View.GONE
+                it.setOnClickListener {
+                    if (mPage > 1)
+                    showProgress()
+                    presenter.getJobListing(mQuery, --mPage)
+                }
+            }
+
+            findViewById<ImageView>(R.id.btn_next).also {
+                it.visibility = View.GONE
+                it.setOnClickListener {
+                    val totalPage = lastResponse?._metadata?.total_pages ?: 0
+                    if (mPage < totalPage) {
+                        showProgress()
+                        presenter.getJobListing(mQuery, ++mPage)
+                    }
+                }
+            }
+
+            findViewById<ImageView>(R.id.btn_last).also {
+                it.visibility = View.GONE
+                it.setOnClickListener {
+                    val totalPage = lastResponse?._metadata?.total_pages ?: 0
+                    showProgress()
+                    mPage = totalPage
+                    presenter.getJobListing(mQuery, totalPage)
+                }
+            }
+
+            findViewById<TextView>(R.id.tv_page_counter).visibility = View.GONE
         }
 
         return root
@@ -93,17 +126,31 @@ class MainFragment : Fragment(), MainContract.View {
     }
 
     override fun showJobList(jobList:Response) {
-        hideProgress()
         listAdapter.setJobList(jobList.data)
         listAdapter.notifyDataSetChanged()
-        lastResponse = jobList
-    }
 
-    override fun showMoreJobList(jobList: Response) {
-        hideProgress()
-        listAdapter.addJobList(jobList.data)
-        listAdapter.notifyDataSetChanged()
+        if (mPage == 1) {
+            btn_first.visibility = View.GONE
+            btn_prev.visibility = View.GONE
+        } else {
+            btn_first.visibility = View.VISIBLE
+            btn_prev.visibility = View.VISIBLE
+        }
+
+        if (mPage == jobList._metadata.total_pages) {
+            btn_next.visibility = View.GONE
+            btn_last.visibility = View.GONE
+        } else {
+            btn_next.visibility = View.VISIBLE
+            btn_last.visibility = View.VISIBLE
+        }
+
+        tv_page_counter.visibility = View.VISIBLE
+        tv_page_counter.text = getString(R.string.page_counter, mPage, jobList._metadata.total_pages)
+
         lastResponse = jobList
+
+        hideProgress()
     }
 
     override fun showJobDetails(requestedJob: Job) {
@@ -118,17 +165,6 @@ class MainFragment : Fragment(), MainContract.View {
         progress_bar.visibility = View.GONE
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     *
-     *
-     * See the Android Training lesson
-     * [Communicating with Other Fragments](http://developer.android.com/training/basics/fragments/communicating.html)
-     * for more information.
-     */
     interface JobItemListener {
         fun onJobClick(clickedJob: Job)
     }

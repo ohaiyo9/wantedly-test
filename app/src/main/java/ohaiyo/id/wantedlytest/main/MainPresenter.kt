@@ -18,11 +18,7 @@ class MainPresenter(val mainView: MainContract.View) : MainContract.Presenter {
     override fun getJobListing(query: String, page: Int) {
         ApiManager.getJobListing(query, page)
                 .doOnError { mainView.showMessage(it.toString()) }
-                .subscribe(Action1 { if (page == 1) {
-                    mainView.showJobList(it)
-                } else {
-                    mainView.showMoreJobList(it)
-                }},
+                .subscribe(Action1 { mainView.showJobList(it) },
                         ErrorHandler(mainView, true, { throwable, errorBody, isNetwork -> mainView.showError(throwable.message) }))
     }
 
